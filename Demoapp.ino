@@ -368,12 +368,10 @@ void rx_mqtt_callback(char* topic, byte* payload, unsigned int msg_length)
     {
         int state = root["state"];
         digitalWrite( PLUG_PIN, state ); //GPIO 15 need a function to do conversion for me
+        //send an update to reflect the current state for devices
+        send_update = true;
     } 
-  }
-  //return;//==========>  ????
-  //send an update to reflect the current state for devices  
-  send_update = true;
-  return;    
+  }  
 } //end of rx_mqtt_callback function
 
 /********************************************************************
@@ -488,7 +486,7 @@ void setup_wifi()
     int start_json = html_header.indexOf('{');
     int stop_json = html_header.indexOf('}', start_json);
     String myJSON = html_header.substring(start_json, stop_json+1);
-StaticJsonBuffer<1024> jsonRxMqttBuffer;
+    StaticJsonBuffer<1024> jsonRxMqttBuffer;
     JsonObject& root = jsonRxMqttBuffer.parseObject(myJSON);
     if (!root.success())
     {
@@ -683,9 +681,9 @@ void sendMQTTDeviceDetails()
    jsondeviceStatus["type"]        = DEV_TYPE; 
    jsondeviceStatus["ipaddress"]   = my_ip_s;
    jsondeviceStatus["bgn"]         = 3;
-   jsondeviceStatus["sdk"]         = ESP.getSdkVersion();//"1.4.0";
+   jsondeviceStatus["sdk"]         = ESP.getSdkVersion();
    jsondeviceStatus["version"]     = sysCfg.sw_version;
-   jsondeviceStatus["uptime"]      = uptime;//uptime;
+   jsondeviceStatus["uptime"]      = NTP.getUptimeString();//uptime;//uptime;
    
    os_memset(&json_buffer_cron, 0x00, sizeof(json_buffer_cron)); //new  
    jsondeviceStatus.printTo(json_buffer_cron, sizeof(json_buffer_cron)); 
