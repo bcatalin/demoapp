@@ -370,7 +370,7 @@ void rx_mqtt_callback(char* topic, byte* payload, unsigned int msg_length)
         digitalWrite( PLUG_PIN, state ); //GPIO 15 need a function to do conversion for me
     } 
   }
-  return;//==========>  ????
+  //return;//==========>  ????
   //send an update to reflect the current state for devices  
   send_update = true;
   return;    
