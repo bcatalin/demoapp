@@ -334,7 +334,11 @@ void rx_mqtt_callback(char* topic, byte* payload, unsigned int msg_length)
          Serial.println(F("************************************************"));
   if ( (strcmp(topic, status_update)  == 0) || (strcmp(topic, identity)  == 0) )
   { 
-    Serial.println("-=-=-=-   rx_mqtt_callback   =-=-=-=-=");
+    // TO DO: identity case should be treated here. If the user will press the Identity button
+    // on the mobile app, the connected status led will start to blink 5 time per second.
+    // this feature is good when you have multiple devices of the same type.
+
+    //For now on any message received on the identity or status update the device will send an update
     send_update = true;
     return;    
   }
