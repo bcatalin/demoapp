@@ -662,10 +662,10 @@ void sendMQTTstatus()
    os_memset(&json_buffer_cron, 0x00, sizeof(json_buffer_cron)); //new
    jsonStatus.printTo(json_buffer_cron, sizeof(json_buffer_cron));
    char pub_state_every_min[80];
-   
-   strcpy(pub_state_every_min, sysCfg.mqtt_topic);
+   strcpy(pub_state_every_min, "/");
+   strcat(pub_state_every_min, sysCfg.mqtt_topic);
    strcat(pub_state_every_min, publish_minute_state);
-
+ 
    Serial.println(pub_state_every_min);
    mqttClient.publish(pub_state_every_min,  json_buffer_cron, false);// , false);  
 }
@@ -690,7 +690,8 @@ void sendMQTTDeviceDetails()
    os_memset(&json_buffer_cron, 0x00, sizeof(json_buffer_cron)); //new  
    jsondeviceStatus.printTo(json_buffer_cron, sizeof(json_buffer_cron)); 
    char dev_status_topic[80];
-   strcpy(dev_status_topic,sysCfg.mqtt_topic);
+   strcpy(dev_status_topic,"/");
+   strcat(dev_status_topic,sysCfg.mqtt_topic);
    strcat(dev_status_topic,device_status_topic);
    
    //sprintf( dev_status_topic, "/%s/%s", sysCfg.mqtt_topic, device_status_topic);
