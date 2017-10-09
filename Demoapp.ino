@@ -270,6 +270,7 @@ void startMQTTService()
         else
            Serial.println(F("WiFi is connected but MQTT is DOWN"));   
       }
+      mqttClient.disconnect();
       delay(5000);
   }//end while MQTT connected.  
 }
@@ -344,7 +345,7 @@ void rx_mqtt_callback(char* topic, byte* payload, unsigned int msg_length)
   }
 
   int i = 0;
-  char rxj[1024]; //was 512
+  char rxj[1024]; //TO DO: allocate jsut the size of the message
  
   for(i=0;i<msg_length;i++)
   {
@@ -495,7 +496,7 @@ void setup_wifi()
     if (!root.success())
     {
       //Serial.println("parseObject() failed");
-      ESP.restart();
+      //ESP.restart();
       return;
     }
     userver  = root["userver"];
