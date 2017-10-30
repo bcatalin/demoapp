@@ -685,10 +685,12 @@ void sendMQTTDeviceDetails()
    jsondeviceStatus["device_name"] = dev_name;
    jsondeviceStatus["type"]        = DEV_TYPE; 
    jsondeviceStatus["ipaddress"]   = my_ip_s;
+   jsondeviceStatus["alexa"]       = sysCfg.alexa_name;
    jsondeviceStatus["bgn"]         = 3;
    jsondeviceStatus["sdk"]         = ESP.getSdkVersion();
    jsondeviceStatus["version"]     = sysCfg.sw_version;
    jsondeviceStatus["uptime"]      = NTP.getUptimeString();//uptime;//uptime;
+   
    
    os_memset(&json_buffer_cron, 0x00, sizeof(json_buffer_cron)); //new  
    jsondeviceStatus.printTo(json_buffer_cron, sizeof(json_buffer_cron)); 
