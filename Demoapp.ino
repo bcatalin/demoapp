@@ -126,19 +126,12 @@ int uport    = 1883;
 //---------------------PLUG specific-------------------
 #define sub_plug  "/plug/command"
 
-//#define subscribe_status_update(topic) ("/"topic""sub_status_update)
-//#define subscribe_status_identity(topic) ("/"topic""sub_identity)
-//#define subscribe_plug(topic) ("/"topic""sub_plug)
-
 /******************************************************
  *              Publishing on this topics
  ******************************************************/
 #define publish_minute_state "/plug/status"
 #define device_status_topic  "/device/status"
 
-
-//==================================================================== 
-//plug
 /********************************************************************
 * FunctionName: stopPlug
 * Description : Stop a plug. Put its GPIO to LOW
@@ -147,7 +140,6 @@ int uport    = 1883;
 *********************************************************************/
 void ICACHE_FLASH_ATTR stopPlug()
 {
-  //INFO("stopPlug\r\n");
   digitalWrite(PLUG_PIN, LOW);
 }
 
@@ -172,10 +164,8 @@ void everyMinuteTimer()
 *********************************************************************/
 void everyMinuteTimerFn()
 {
-  //Serial.printf("EveryMinuteTimerFn\n");
   uptime++;
   sendOneMQTTUpdate();           
-  //WiFi.printDiag(Serial); //==============> TO BE REMOVED
   INFO("everyMinuteTimerFn HEAP: %d msg_count:%d WiFi.connected:%d MQTT.connected:%d apMode:%d\n", 
                   ESP.getFreeHeap(), 
                   ++msg_count, 
@@ -203,20 +193,20 @@ void startMQTTService()
     Serial.printf("Connecting to MQTT: %s p:%s u:%s p:%s\n", sysCfg.mqtt_host, sysCfg.mqtt_port, sysCfg.mqtt_user, sysCfg.mqtt_pass);
     while (!mqttClient.connected()) 
     {
-      Serial.println(F("Check first Wifi, maybe is down due to Wifi issues, then check MQTT."));
-      mqtt_fail++;
-      if ( WiFi.status() != WL_CONNECTED )
-      {
-        Serial.println(F("MQTT is down but also Wifi. Let's fix first Wifi connecction!"));
-        return; //===>
-      }
-      Serial.println(F("Wifi is up. Maybe the MQTT is down..."));
-
-      if(mqtt_fail == 10)
-      {
-        //give up for now will retry later
-        return;
-      }
+//      Serial.println(F("Check first Wifi, maybe is down due to Wifi issues, then check MQTT."));
+//      mqtt_fail++;
+//      if ( WiFi.status() != WL_CONNECTED )
+//      {
+//        Serial.println(F("MQTT is down but also Wifi. Let's fix first Wifi connecction!"));
+//        return; //===>
+//      }
+//      Serial.println(F("Wifi is up. Maybe the MQTT is down..."));
+//
+//      if(mqtt_fail == 10)
+//      {
+//        //give up for now will retry later
+//        return;
+//      }
       INFO("Attempting MQTT connection..DEV:%s USERVER:%s PORT:%s USER:%s PASS:%s\n",dev_name,sysCfg.mqtt_host, sysCfg.mqtt_port, sysCfg.mqtt_user, sysCfg.mqtt_pass);       
       mqttClient.connect(dev_name, sysCfg.mqtt_user, sysCfg.mqtt_pass);
       if (mqttClient.connected())  
@@ -234,21 +224,21 @@ void startMQTTService()
          strcat(status_update,sysCfg.mqtt_topic);
          strcat(status_update,sub_status_update);
          mqttClient.subscribe(status_update);
-         mqttClient.loop();
+         //mqttClient.loop();
          
          char identity[80];
          strcpy(identity,"/");
          strcat(identity,sysCfg.mqtt_topic);
          strcat(identity,sub_identity);
          mqttClient.subscribe(identity);
-         mqttClient.loop(); //sub_plug
+         //mqttClient.loop(); //sub_plug
          
          char subscrib_plug[80];
          strcpy(subscrib_plug,"/");
          strcat(subscrib_plug,sysCfg.mqtt_topic);
          strcat(subscrib_plug,sub_plug);
          mqttClient.subscribe(subscrib_plug);
-         mqttClient.loop(); 
+         //mqttClient.loop(); 
 
          Serial.println(F("****** SUBSCRIBED TO TOPICS ********************"));
          Serial.println(status_update);
@@ -257,21 +247,21 @@ void startMQTTService()
          Serial.println(F("************************************************"));
          return;//==============>    
       } 
-      else 
-      {
-        Serial.println(mqttClient.state());
-        if ( WiFi.status() != WL_CONNECTED )
-        {
-             WiFi.disconnect();
-           Serial.println(F("WiFi is not connected. try a reconnect try:"));
-           WiFi.begin(sysCfg.sta_ssid, sysCfg.sta_pwd); //try to reconnect
-           delay(5000);
-        }
-        else
-           Serial.println(F("WiFi is connected but MQTT is DOWN"));   
-      }
-      mqttClient.disconnect();
-      delay(5000);
+//      else 
+//      {
+//        Serial.println(mqttClient.state());
+//        if ( WiFi.status() != WL_CONNECTED )
+//        {
+//             WiFi.disconnect();
+//           Serial.println(F("WiFi is not connected. try a reconnect try:"));
+//           WiFi.begin(sysCfg.sta_ssid, sysCfg.sta_pwd); //try to reconnect
+//           delay(5000);
+//        }
+//        else
+//           Serial.println(F("WiFi is connected but MQTT is DOWN"));   
+//      }
+//      mqttClient.disconnect();
+//      delay(5000);
   }//end while MQTT connected.  
 }
 
@@ -309,9 +299,9 @@ int  my_atoi(char *p) {
  ******************************************************************/
 void rx_mqtt_callback(char* topic, byte* payload, unsigned int msg_length)
 {
-  Serial.println(F("=====> RX MQTT packet - rx_mqtt_callback"));                  //=======>
-  Serial.println(msg_length);
-  Serial.println(topic);
+ // Serial.println(F("=====> RX MQTT packet - rx_mqtt_callback"));                  //=======>
+ // Serial.println(msg_length);
+ // Serial.println(topic);
 
  char status_update[80];
  strcpy(status_update,"/");
@@ -328,13 +318,13 @@ void rx_mqtt_callback(char* topic, byte* payload, unsigned int msg_length)
  strcat(subscrib_plug,sysCfg.mqtt_topic);
  strcat(subscrib_plug,sub_plug);
 
-         Serial.println(F("****** CHECK FOR TOPICS ********************"));
-         Serial.println(status_update);
-         Serial.println(identity);
-         Serial.println(subscrib_plug);
-         Serial.println(F("************************************************"));
-  if ( (strcmp(topic, status_update)  == 0) || (strcmp(topic, identity)  == 0) )
-  { 
+ Serial.println(F("****** CHECK FOR TOPICS ********************"));
+ Serial.println(status_update);
+ Serial.println(identity);
+ Serial.println(subscrib_plug);
+ Serial.println(F("************************************************"));
+ if ( (strcmp(topic, status_update)  == 0) || (strcmp(topic, identity)  == 0) )
+ { 
     // TO DO: identity case should be treated here. If the user will press the Identity button
     // on the mobile app, the connected status led will start to blink 5 time per second.
     // this feature is good when you have multiple devices of the same type.
@@ -414,10 +404,10 @@ void setup_wifi()
 
    while (WiFi.status() != WL_CONNECTED) //
    {
-     WiFi.persistent(false);
-     WiFi.mode(WIFI_OFF);
+     //WiFi.persistent(false);
+     //WiFi.mode(WIFI_OFF);
      WiFi.disconnect();    //new============== for disconnect issues.     
-     WiFi.mode(WIFI_STA);
+     //WiFi.mode(WIFI_STA);
      WiFi.begin(sysCfg.sta_ssid, sysCfg.sta_pwd); //try to reconnect
    
      Serial.println(F("...try WiFi.begin again..."));
@@ -507,7 +497,7 @@ void setup_wifi()
     strcpy(sysCfg.mqtt_host, root["userver"]);
     strcpy(sysCfg.mqtt_topic, root["utopic"]);  
      
-     Serial.println(sysCfg.mqtt_topic);  
+    //Serial.println(sysCfg.mqtt_topic);  
        
                    //sysCfg.mqtt_port = itoa(uport);  
     itoa(uport, sysCfg.mqtt_port,10);
@@ -528,9 +518,8 @@ void setup_wifi()
    upnpBroadcastResponder.addDevice(*office);
 
    // start NTP Cleint
-    NTP.begin("pool.ntp.org", atoi(sysCfg.time_zone), true);
-    NTP.setInterval(63);
-    
+   NTP.begin("pool.ntp.org", atoi(sysCfg.time_zone), true);
+   NTP.setInterval(63);    
 }
 
 
@@ -618,7 +607,7 @@ void launchWeb(int webtype) {
 void setupAP(void) 
 {
   WiFi.disconnect();
-  WiFi.mode(WIFI_STA);
+  WiFi.mode(WIFI_AP);
   delay(100);
   WiFi.softAP(ssid);//, passphrase, 6);
   Serial.println(F("softap"));
@@ -639,7 +628,7 @@ void setWebService()
      * SNTP
      ****************************************************/
      SNTP_Init(atoi(sysCfg.time_zone) );
-     delay(1000);
+     //delay(1000);
    }
    else
    {
@@ -783,25 +772,25 @@ void setup()
 int wifi_counter = 0;
 void loop() 
 {
-  if(!apMode)
-   while (WiFi.status() != WL_CONNECTED) 
-   {
-     wifi_counter++;
-     if(wifi_counter == 10)
-     {
-       Serial.println(F("Tried to recover wifi for 50s. Give up now. Try later"));       
-       break;
-     }
-     WiFi.persistent(false);
-     WiFi.mode(WIFI_OFF);
-     WiFi.disconnect(); 
-     WiFi.mode(WIFI_STA);
-     WiFi.begin(sysCfg.sta_ssid, sysCfg.sta_pwd); //try to reconnect
-   
-     Serial.println(F("...try WiFi.begin again...loop")); 
-     delay(5000);
-   }
-  wifi_counter=0;
+//  if(!apMode)
+//   while (WiFi.status() != WL_CONNECTED) 
+//   {
+//     wifi_counter++;
+//     if(wifi_counter == 10)
+//     {
+//       Serial.println(F("Tried to recover wifi for 50s. Give up now. Try later"));       
+//       break;
+//     }
+//     WiFi.persistent(false);
+//     WiFi.mode(WIFI_OFF);
+//     WiFi.disconnect(); 
+//     WiFi.mode(WIFI_STA);
+//     WiFi.begin(sysCfg.sta_ssid, sysCfg.sta_pwd); //try to reconnect
+//   
+//     Serial.println(F("...try WiFi.begin again...loop")); 
+//     delay(5000);
+//   }
+//  wifi_counter=0;
   if(!mqttClient.connected() && (apMode == false) )
   {
     startMQTTService();
